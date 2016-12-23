@@ -50,11 +50,10 @@ public class TaskAdapter extends BaseAdapter {
         TextView textView1 = (TextView) convertView.findViewById(android.R.id.text1);
         TextView textView2 = (TextView) convertView.findViewById(android.R.id.text2);
 
-        textView1.setText(mTaskArrayList.get(position).getTitle() + ":" + mTaskArrayList.get(position).getCategory()+ ":" + mTaskArrayList.get(position).getContents());
+        textView1.setText(mTaskArrayList.get(position).getTitle() + ":" + mTaskArrayList.get(position).getCategory());
 
-        Log.d("test", mTaskArrayList.get(position).getTitle() + ": " + mTaskArrayList.get(position).getCategory() + ": " + mTaskArrayList.get(position).getContents()); //log test
-        textView1.setTextColor(Color.RED);
-        textView2.setTextColor(Color.GREEN);
+        ///Log.d("test", mTaskArrayList.get(position).getTitle() + ": " + mTaskArrayList.get(position).getCategory() + ": " + mTaskArrayList.get(position).getContents()); //log test
+        textView2.setTextColor(Color.BLUE);
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.JAPANESE);
         Date date = mTaskArrayList.get(position).getDate();

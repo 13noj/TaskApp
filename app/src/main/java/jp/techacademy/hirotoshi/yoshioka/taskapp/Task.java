@@ -20,7 +20,6 @@ public class Task extends RealmObject implements Serializable {
     public String getTitle() {
         return title;
     }
-
     public void setTitle(String title) {
         this.title = title;
     }
@@ -28,7 +27,6 @@ public class Task extends RealmObject implements Serializable {
     public String getContents() {
         return contents;
     }
-
     public void setContents(String contents) {
         this.contents = contents;
     }
@@ -36,7 +34,6 @@ public class Task extends RealmObject implements Serializable {
     public Date getDate() {
         return date;
     }
-
     public void setDate(Date date) {
         this.date = date;
     }

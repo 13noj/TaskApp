@@ -10,8 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
-
+import android.widget.SearchView;
 import java.util.ArrayList;
 
 import io.realm.Realm;
@@ -19,7 +20,9 @@ import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+
     public final static String EXTRA_TASK = "jp.techacademy.hirotoshi.yoshioka.taskapp.TASK";
 
     private Realm mRealm;
@@ -33,10 +36,24 @@ public class MainActivity extends AppCompatActivity {
     private ListView mListView;
     private TaskAdapter mTaskAdapter;
 
+    //課題のために追加
+    private SearchView mSearchView;
+    private String mSearchWord;
+    //課題のために追加
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mSearchView = (SearchView) findViewById(R.id.searchView);  //課題のために追加
+        mSearchView.setOnQueryTextListener(onQueryTextListener); //課題のために追加
+
+        Button resetButton = (Button) findViewById(R.id.resetButton); //課題のために追加
+        resetButton.setOnClickListener(this);                         //課題のために追加
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -94,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
                         mRealm.beginTransaction();
                         results.deleteAllFromRealm();
                         mRealm.commitTransaction();
+                        mTaskRealmResults = mRealm.where(Task.class).findAll(); // E.Nozaki この行を追加。*課題　Category
+                        mTaskRealmResults.sort("date", Sort.DESCENDING);       // E.Nozaki この行を追加。 *課題　Category
 
                         Intent resultIntent = new Intent(getApplicationContext(), TaskAlarmReceiver.class);
                         PendingIntent resultPendingIntent = PendingIntent.getBroadcast(
@@ -119,6 +138,55 @@ public class MainActivity extends AppCompatActivity {
         });
 
         reloadListView();
+    }
+
+    //*************************************************課題のために追加
+    @Override
+    public void onClick(View v) {
+        Log.d("logtest", "ボタンをタップしました1");
+        mTaskRealmResults = mRealm.where(Task.class).findAll();//課題のため追加
+        reloadListView(); //課題のため追加 リストの更新
+        Log.d("logtest", "ボタンをタップしました。リストは更新された？");
+    }
+    //*************************************************課題のために追加
+
+    private SearchView.OnQueryTextListener onQueryTextListener = new SearchView.OnQueryTextListener() {
+        @Override
+        public boolean onQueryTextSubmit(String mSearchWord) {
+            // SubmitボタンorEnterKeyを押されたら呼び出されるメソッド
+            Log.d("logtest", "検索ワードは" + mSearchWord + "です"); //課題のため追加
+
+            boolean isSet = setSearchWord(mSearchWord); //課題のため追加
+            Log.d("logtest", "boolean: " + isSet);
+            if (isSet) {
+                Log.d("logtest", "検索ワード1は" + mSearchWord + "です"); //課題のため追加
+                mTaskRealmResults = mRealm.where(Task.class).contains("category", mSearchWord).findAll();//課題のため追加
+
+            } else {
+              //  mTaskRealmResults = mRealm.where(Task.class).findAll();
+                mTaskRealmResults = mRealm.where(Task.class).findAll();//課題のため追加
+                Log.d("logtest", "検索ワードは2" + mSearchWord + "です"); //課題のため追加
+            }
+            reloadListView(); //課題のため追加 リストの更新
+            return isSet;
+        }
+        @Override
+        public boolean onQueryTextChange(String newText) {
+            // 入力される度に呼び出される
+            return false;
+        }
+
+    };
+
+    private boolean setSearchWord(String searchWord) {
+        if (searchWord != null && !searchWord.equals("")) {
+            // searchWordがあることを確認
+            this.mSearchWord = searchWord;
+            return true;
+        } else {
+            this.mSearchWord = " ";
+            return false;
+        }
     }
 
     private void reloadListView() {
